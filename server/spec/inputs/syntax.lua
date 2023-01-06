@@ -162,11 +162,14 @@ local m = m % 2
 local hello = hello .. "world"
 self.__class.something = self.__class.something + 10
 self.something = self.something + 10
-self.__class.then = self.__class.then + 10
-self.then = self.then + 10
-a["hello"] = a["hello"] + 10
-a["hello" .. tostring(tostring(ff))] = a["hello"] + 10
-a[four].x = a[four].x + 10
+self.__class["then"] = self.__class["then"] + 10
+self["then"] = self["then"] + 10
+local _update_0 = "hello"
+a[_update_0] = a[_update_0] + 10
+local _update_1 = "hello" .. tostring(tostring(ff))
+a[_update_1] = a[_update_1] + 10
+local _update_2 = four
+a[_update_2].x = a[_update_2].x + 10
 x = 0
 local _list_0 = values
 for _index_0 = 1, #_list_0 do
@@ -191,7 +194,7 @@ _ = 5 + what(wack)
 what(whack + 5)
 _ = 5 - what(wack)
 what(whack - 5)
-x = hello - world - something
+x = hello - world - something;
 (function(something)
   if something == nil then
     do
