@@ -1,14 +1,7 @@
-local parse = require("moonscript.parse")
-return function(self, params)
-  if params.contentChanges then
-    self.content = params.contentChanges[1].text
-  else
-    self.content = params.textDocument.text
-  end
-  self.uri = params.textDocument.uri
-  io.stderr:write(self.content)
+return function(self)
   local tree, err_line, err_pos, err_end = parse.string_raw(self.content)
   local diagnostics = { }
+  print(tree)
   if not (tree) then
     io.stderr:write(err_line, err_pos)
     diagnostics = {
@@ -29,11 +22,11 @@ return function(self, params)
       }
     }
   end
-  return {
+  return self:notify({
     method = "textDocument/publishDiagnostics",
     params = {
       uri = self.uri,
       diagnostics = diagnostics
     }
-  }
+  })
 end
