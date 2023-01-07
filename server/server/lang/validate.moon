@@ -74,7 +74,11 @@ findSymbols = (tree) =>
 					scopeStack[#scopeStack][k[2]] or= scopeStack[#scopeStack].glob or k
 
 		ref: (node) ->
+			if @content\sub(node[-1], node[-1]) == " "
+				node[-1] += 1 -- TODO: Fix this hack
+
 			line, character = pos_to_line_column @content, node[-1]
+
 			range = {
 				start: { :line, :character },
 				["end"]: { :line, character: character + #node[2] - 1 },

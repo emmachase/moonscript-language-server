@@ -6,7 +6,7 @@ return function(self, params)
   local _list_0 = self.symbols
   for _index_0 = 1, #_list_0 do
     local symbol = _list_0[_index_0]
-    if symbol.selectionRange.start.line == line and symbol.selectionRange["end"].line == line and symbol.selectionRange.start.character <= character and symbol.selectionRange["end"].character >= character then
+    if symbol.selectionRange.start.line == line and symbol.selectionRange["end"].line == line and symbol.selectionRange.start.character - 1 <= character and symbol.selectionRange["end"].character >= character then
       local declarationNode = self.symbolDeclarationMap[symbol]
       if not (declarationNode) then
         return null

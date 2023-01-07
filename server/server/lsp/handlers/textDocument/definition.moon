@@ -7,9 +7,9 @@ import null from require "util.json"
 
 	-- Find the symbol at the given position
 	for symbol in *@symbols
-		if symbol.selectionRange.start.line == line           and
-		   symbol.selectionRange.end.line == line             and
-		   symbol.selectionRange.start.character <= character and 
+		if symbol.selectionRange.start.line == line               and
+		   symbol.selectionRange.end.line == line                 and
+		   symbol.selectionRange.start.character - 1 <= character and 
 		   symbol.selectionRange.end.character >= character
 		    declarationNode = @symbolDeclarationMap[symbol]
 			return null unless declarationNode

@@ -92,6 +92,9 @@ findSymbols = function(self, tree)
       end
     end,
     ref = function(node)
+      if self.content:sub(node[-1], node[-1]) == " " then
+        node[-1] = node[-1] + 1
+      end
       local line, character = pos_to_line_column(self.content, node[-1])
       local range = {
         start = {
