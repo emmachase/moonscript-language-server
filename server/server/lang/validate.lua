@@ -113,6 +113,11 @@ findSymbols = function(self, tree)
         range = range,
         selectionRange = range
       }
+      if type(declaration) == "table" then
+        declaration.uses = declaration.uses or { }
+        declaration.uses[#declaration.uses + 1] = symbol
+      end
+      self.symbolNodeMap[symbol] = node
       self.symbolDeclarationMap[symbol] = declaration
       self.symbolPositionMap[node[-1]] = symbol
       symbols[#symbols + 1] = symbol
@@ -147,6 +152,7 @@ findSymbols = function(self, tree)
             range = range,
             selectionRange = range
           }
+          self.symbolNodeMap[symbol] = arg
           self.symbolDeclarationMap[symbol] = declaration
           self.symbolPositionMap[arg[-1]] = symbol
           symbols[#symbols + 1] = symbol

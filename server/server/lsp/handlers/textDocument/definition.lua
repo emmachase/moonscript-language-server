@@ -11,23 +11,25 @@ return function(self, params)
       if not (declarationNode) then
         return null
       end
-      local declarationSymbol = self.symbolPositionMap[declarationNode[-1]]
-      if declarationSymbol then
-        return {
-          uri = self.uri,
-          range = {
-            start = {
-              line = declarationSymbol.selectionRange.start.line,
-              character = declarationSymbol.selectionRange.start.character - 1
-            },
-            ["end"] = {
-              line = declarationSymbol.selectionRange["end"].line,
-              character = declarationSymbol.selectionRange["end"].character
+      do
+        local declarationSymbol = self.symbolPositionMap[declarationNode[-1]]
+        if declarationSymbol then
+          return {
+            uri = self.uri,
+            range = {
+              start = {
+                line = declarationSymbol.selectionRange.start.line,
+                character = declarationSymbol.selectionRange.start.character - 1
+              },
+              ["end"] = {
+                line = declarationSymbol.selectionRange["end"].line,
+                character = declarationSymbol.selectionRange["end"].character
+              }
             }
           }
-        }
-      else
-        return null
+        else
+          return null
+        end
       end
     end
   end

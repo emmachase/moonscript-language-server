@@ -91,6 +91,11 @@ findSymbols = (tree) =>
 				:range, selectionRange: range
 			}
 
+			if type(declaration) == "table"
+				declaration.uses or= {}
+				declaration.uses[#declaration.uses + 1] = symbol
+
+			@symbolNodeMap[symbol] = node
 			@symbolDeclarationMap[symbol] = declaration
 			@symbolPositionMap[node[-1]] = symbol
 			symbols[#symbols + 1] = symbol
@@ -116,6 +121,7 @@ findSymbols = (tree) =>
 					:range, selectionRange: range
 				}
 
+				@symbolNodeMap[symbol] = arg
 				@symbolDeclarationMap[symbol] = declaration
 				@symbolPositionMap[arg[-1]] = symbol
 				symbols[#symbols + 1] = symbol

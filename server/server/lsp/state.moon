@@ -5,6 +5,7 @@ class ServerState
 		@initialized = false
 		@pendingNotifications = {}
 		@symbolDeclarationMap = {}
+		@symbolNodeMap = {}
 		@symbolPositionMap = {}
 
 	notify: (notification) =>

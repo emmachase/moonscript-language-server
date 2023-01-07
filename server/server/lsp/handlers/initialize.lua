@@ -4,7 +4,8 @@ return function(self, params)
     capabilities = {
       textDocumentSync = 1,
       documentSymbolProvider = true,
-      definitionProvider = true
+      definitionProvider = true,
+      referencesProvider = true
     },
     serverInfo = {
       name = "Moonscript Language Server"

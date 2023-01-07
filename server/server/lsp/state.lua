@@ -17,6 +17,7 @@ do
       self.initialized = false
       self.pendingNotifications = { }
       self.symbolDeclarationMap = { }
+      self.symbolNodeMap = { }
       self.symbolPositionMap = { }
     end,
     __base = _base_0,

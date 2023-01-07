@@ -14,8 +14,7 @@ import null from require "util.json"
 		    declarationNode = @symbolDeclarationMap[symbol]
 			return null unless declarationNode
 
-			declarationSymbol = @symbolPositionMap[declarationNode[-1]]
-			if declarationSymbol
+			if declarationSymbol = @symbolPositionMap[declarationNode[-1]]
 				return {
 					uri: @uri,
 					range: {
