@@ -1,4 +1,4 @@
-log = io.open "log.txt", "a"
+-- log = io.open "log.txt", "a"
 
 import pformat from require "util.pprint"
 
