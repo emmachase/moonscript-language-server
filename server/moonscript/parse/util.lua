@@ -50,8 +50,7 @@ show_line_position = function(str, pos, context)
     { }
   }
   for c in str:gmatch(".") do
-    local _update_0 = #lines
-    lines[_update_0] = lines[_update_0] or { }
+    lines[#lines] = lines[#lines] or { }
     table.insert(lines[#lines], c)
     if c == "\n" then
       lines[#lines + 1] = { }
@@ -98,6 +97,7 @@ local mark
 mark = function(name)
   return function(...)
     return {
+      name = name,
       name,
       ...
     }
@@ -181,12 +181,14 @@ do
     local _exp_0 = t
     if "assign" == _exp_0 then
       return {
+        name = "assign",
         "assign",
         lhs_exps,
         unpack(assign, 2)
       }
     elseif "update" == _exp_0 then
       return {
+        name = "assign",
         "update",
         lhs_exps[1],
         unpack(assign, 2)
@@ -228,6 +230,7 @@ end
 local wrap_func_arg
 wrap_func_arg = function(value)
   return {
+    name = "call",
     "call",
     {
       value
@@ -248,6 +251,7 @@ join_chain = function(callee, args)
     return callee
   end
   return {
+    name = "chain",
     "chain",
     callee,
     args
@@ -259,6 +263,7 @@ wrap_decorator = function(stm, dec)
     return stm
   end
   return {
+    name = "decorated",
     "decorated",
     stm,
     dec
@@ -269,13 +274,15 @@ check_lua_string = function(str, pos, right, left)
   return #left == #right
 end
 local self_assign
-self_assign = function(name, pos)
+self_assign = function(pos, name)
   return {
     {
+      name = "key_literal",
       "key_literal",
       name
     },
     {
+      name = "ref",
       "ref",
       name,
       [-1] = pos

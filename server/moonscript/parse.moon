@@ -283,7 +283,7 @@ build_grammar = wrap_env debug_grammar, (root) ->
       op"*" + op"^" +
       Ct(NameList) * (sym"=" * Ct(ExpListLow))^-1) / mark"export"
 
-    KeyValue: (sym":" * -SomeSpace *  Name * lpeg.Cp!) / self_assign +
+    KeyValue: (sym":" * -SomeSpace * lpeg.Cp! * Name) / self_assign +
       Ct(
         (KeyName + sym"[" * Exp * sym"]" +Space * DoubleString + Space * SingleString) *
         symx":" *
@@ -297,8 +297,8 @@ build_grammar = wrap_env debug_grammar, (root) ->
       (key"using" * Ct(NameList + Space * "nil") + Ct"") *
       White * sym")" + Ct"" * Ct""
 
-    FnArgDefList: FnArgDef * ((sym"," + Break) * White * FnArgDef)^0 * ((sym"," + Break) * White * Ct(VarArg))^0 + Ct(VarArg)
-    FnArgDef: Ct((Name + SelfName) * (sym"=" * Exp)^-1)
+    FnArgDefList: FnArgDef * ((sym"," + Break) * White * FnArgDef)^0 * ((sym"," + Break) * White * pos(Ct(VarArg)))^0 + pos(Ct(VarArg))
+    FnArgDef: pos(Ct((Name + SelfName) * (sym"=" * Exp)^-1))
 
     FunLit: FnArgsDef *
       (sym"->" * Cc"slim" + sym"=>" * Cc"fat") *

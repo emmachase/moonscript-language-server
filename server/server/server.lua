@@ -1,10 +1,10 @@
 package.path = "?.lua;server/?.lua;server/?/init.lua"
+print = function() end
 local decode, encode
 do
   local _obj_0 = require("util.jsonrpc")
   decode, encode = _obj_0.decode, _obj_0.encode
 end
-local print
 print = require("util.out").print
 local ServerState = require("lsp.state")
 local PacketHandler = require("lsp.packet")
@@ -30,12 +30,21 @@ while true do
   print("Waiting for packet")
   local packet = decode(reader)
   print(packet)
-  do
-    local result = PacketHandler(serverState, packet)
-    if result then
-      print("Sending response")
-      print(encode(result))
-      puts(encode(result))
+  local s, e = pcall(function()
+    do
+      local result = PacketHandler(serverState, packet)
+      if result then
+        print("Sending response")
+        print(result)
+        return puts(encode(result))
+      end
     end
+  end)
+  if not s then
+    print("Error handling packet")
+    print(e)
+  end
+  while #serverState.pendingNotifications > 0 do
+    puts(encode(table.remove(serverState.pendingNotifications, 1)))
   end
 end

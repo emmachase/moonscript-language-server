@@ -28,7 +28,11 @@ local json = { _version = "0.1.2" }
 -- Encode
 -------------------------------------------------------------------------------
 
+local pprint = require("util.pprint")
+
 local encode
+
+json.null = {}
 
 local escape_char_map = {
   [ "\\" ] = "\\",
@@ -70,12 +74,13 @@ local function encode_table(val, stack)
     local n = 0
     for k in pairs(val) do
       if type(k) ~= "number" then
-        error("invalid table: mixed or invalid key types")
+        error("invalid table: mixed or invalid key types: " .. pprint.pformat(val))
       end
       n = n + 1
     end
     if n ~= #val then
-      error("invalid table: sparse array")
+
+      error("invalid table: sparse array: " .. pprint.pformat(val))
     end
     -- Encode
     for i, v in ipairs(val) do
@@ -122,6 +127,10 @@ local type_func_map = {
 
 
 encode = function(val, stack)
+  if val == json.null then
+    return "null"
+  end
+
   local t = type(val)
   local f = type_func_map[t]
   if f then

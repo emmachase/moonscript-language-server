@@ -4,6 +4,8 @@ class ServerState
 	new: =>
 		@initialized = false
 		@pendingNotifications = {}
+		@symbolDeclarationMap = {}
+		@symbolPositionMap = {}
 
 	notify: (notification) =>
 		table.insert @pendingNotifications, notification

@@ -4,6 +4,8 @@
 -- Rewrite package path to include the 'server' directory
 package.path = "?.lua;server/?.lua;server/?/init.lua"
 
+export print = ->
+
 import decode, encode from require "util.jsonrpc"
 import print from require "util.out"
 
@@ -27,12 +29,21 @@ while true
     print "Waiting for packet"
     packet = decode reader
     print packet
-    if result = PacketHandler serverState, packet
-        print "Sending response"
-        print encode result
-        --io.write (encode(result))
-        puts encode result
-        -- io.flush!
+
+    s, e = pcall ->
+        if result = PacketHandler serverState, packet
+            print "Sending response"
+            print result
+            --io.write (encode(result))
+            puts encode result
+            -- io.flush!
+
+    if not s
+        print "Error handling packet"
+        print e
+
+    while #serverState.pendingNotifications > 0
+        puts encode table.remove serverState.pendingNotifications, 1
 
     -- x = x + 1
     -- if x >= 4

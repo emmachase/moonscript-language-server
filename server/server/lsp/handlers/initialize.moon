@@ -67,7 +67,9 @@
 	@initialized = true
 	{ 
 		capabilities: {
-			textDocumentSync: 1 -- Full Sync -- TODO: 2 for incremental
+			textDocumentSync: 1, -- Full Sync -- TODO: 2 for incremental
+			documentSymbolProvider: true,
+			definitionProvider: true,
 		}
 		serverInfo: { name: "Moonscript Language Server" } -- TODO: version
 	}

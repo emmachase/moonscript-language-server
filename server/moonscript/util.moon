@@ -33,12 +33,13 @@ pos_to_line = (str, pos) ->
   line
 
 pos_to_line_column = (str, pos) ->
-  line = 1
-  column = 1
-  for char in str\sub(1, pos)\gmatch(".")
-    if char == "\n"
+  line = 0
+  column = 0
+  str = str\sub(1, pos)
+  for i = 1, #str
+    if str\sub(i, i) == "\n"
       line += 1
-      column = 1
+      column = 0
     else
       column += 1
   line, column

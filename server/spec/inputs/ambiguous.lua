@@ -1,7 +1,7 @@
 local a = 'b'
-local c = d;
+local c = d
 (a(b))(c(d))
-c = d.c;
+c = d.c
 (a(b))(c(d));
 (c(d))(a(b))
 local b

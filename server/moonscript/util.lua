@@ -40,12 +40,13 @@ pos_to_line = function(str, pos)
 end
 local pos_to_line_column
 pos_to_line_column = function(str, pos)
-  local line = 1
-  local column = 1
-  for char in str:sub(1, pos):gmatch(".") do
-    if char == "\n" then
+  local line = 0
+  local column = 0
+  str = str:sub(1, pos)
+  for i = 1, #str do
+    if str:sub(i, i) == "\n" then
       line = line + 1
-      column = 1
+      column = 0
     else
       column = column + 1
     end

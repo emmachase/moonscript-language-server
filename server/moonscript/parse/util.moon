@@ -73,7 +73,7 @@ show_line_position = (str, pos, context=true) ->
 
 -- used to identify a capture with a label
 mark = (name) ->
-  (...) -> {name, ...}
+  (...) -> { :name, name, ...}
 
 -- wraps pattern to capture pos into node
 -- pos is the character offset from the buffer where the node was parsed from.
@@ -133,9 +133,9 @@ format_assign = do
     t = ntype assign
     switch t
       when "assign"
-        {"assign", lhs_exps, unpack assign, 2}
+        {name: "assign", "assign", lhs_exps, unpack assign, 2}
       when "update"
-        {"update", lhs_exps[1], unpack assign, 2}
+        {name: "assign", "update", lhs_exps[1], unpack assign, 2}
       else
         error "unknown assign expression: #{t}"
 
@@ -165,7 +165,7 @@ simple_string = (delim, allow_interpolation) ->
   C(symx(delim)) * inner * sym(delim) / mark"string"
 
 -- wraps a single value in format needed to be passed as function arguments
-wrap_func_arg = (value) -> {"call", {value}}
+wrap_func_arg = (value) -> {name: "call", "call", {value}}
 
 -- chains are parsed in two captures, the chain and then the open arguments
 -- if there are open arguments, then append them to the end of the chain as a call
@@ -177,19 +177,19 @@ join_chain = (callee, args) ->
     table.insert callee, args
     return callee
 
-  {"chain", callee, args}
+  {name: "chain", "chain", callee, args}
 
 -- constructor for decorator node
 wrap_decorator = (stm, dec) ->
   return stm unless dec
-  {"decorated", stm, dec}
+  {name: "decorated", "decorated", stm, dec}
 
 check_lua_string = (str, pos, right, left) ->
   #left == #right
 
 -- constructor for :name self assignments in table literals
-self_assign = (name, pos) ->
-	{{"key_literal", name}, {"ref", name, [-1]: pos}}
+self_assign = (pos, name) ->
+	{{name: "key_literal", "key_literal", name}, {name:"ref", "ref", name, [-1]: pos}}
 
 { :Indent, :Cut, :ensure, :extract_line, :mark, :pos, :flatten_or_mark,
   :is_assignable, :check_assignable, :format_assign, :format_single_assign,
