@@ -86,8 +86,12 @@ findSymbols = function(self, tree)
         local k, v
         k, v = pair[1], pair[2]
         print(k, v)
-        if type(k) == "table" and k[1] == "ref" then
-          scopeStack[#scopeStack][k[2]] = scopeStack[#scopeStack][k[2]] or (scopeStack[#scopeStack].glob or k)
+        if type(k) == "table" then
+          visit(k, {
+            ref = function(node)
+              scopeStack[#scopeStack][node[2]] = scopeStack[#scopeStack][node[2]] or (scopeStack[#scopeStack].glob or node)
+            end
+          })
         end
       end
     end,

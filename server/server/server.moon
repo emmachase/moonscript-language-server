@@ -41,6 +41,13 @@ while true
     if not s
         print "Error handling packet"
         print e
+        serverState\notify {
+            method: "window/logMessage",
+            params: {
+                type: 1,
+                message: tostring e
+            }
+        }
 
     while #serverState.pendingNotifications > 0
         puts encode table.remove serverState.pendingNotifications, 1

@@ -2,6 +2,11 @@ local ntype
 ntype = require("moonscript.types").ntype
 local visit
 visit = function(tree, visitors)
+  if type(visitors) == "function" then
+    visitors = {
+      default = visitors
+    }
+  end
   if not (tree) then
     return 
   end
@@ -16,6 +21,10 @@ visit = function(tree, visitors)
           popFun = visitors[visitors[nodeType]](node)
         elseif "function" == _exp_0 then
           popFun = visitors[nodeType](node)
+        else
+          if visitors.default then
+            popFun = visitors.default(node)
+          end
         end
       end
       visit(node, visitors)

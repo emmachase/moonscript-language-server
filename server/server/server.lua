@@ -43,6 +43,13 @@ while true do
   if not s then
     print("Error handling packet")
     print(e)
+    serverState:notify({
+      method = "window/logMessage",
+      params = {
+        type = 1,
+        message = tostring(e)
+      }
+    })
   end
   while #serverState.pendingNotifications > 0 do
     puts(encode(table.remove(serverState.pendingNotifications, 1)))

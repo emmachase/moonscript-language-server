@@ -1,6 +1,8 @@
 import ntype from require "moonscript.types"
 
 visit = (tree, visitors) ->
+	if type(visitors) == "function" then visitors = { default: visitors }
+
 	return unless tree
 
 	for node in *tree
@@ -14,6 +16,10 @@ visit = (tree, visitors) ->
 						popFun = visitors[visitors[nodeType]] node
 					when "function"
 						popFun = visitors[nodeType] node
+					else
+						if visitors.default
+							popFun = visitors.default node
+
 		
 			visit node, visitors
 

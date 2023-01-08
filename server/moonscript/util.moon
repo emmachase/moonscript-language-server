@@ -44,6 +44,16 @@ pos_to_line_column = (str, pos) ->
       column += 1
   line, column
 
+line_column_to_pos = (str, line, column) ->
+  pos = 0
+  for i = 1, #str
+    if str\sub(i, i) == "\n"
+      line -= 1
+      if line == 0
+        return pos + column
+    pos += 1
+  pos
+
 trim = (str) ->
   str\match "^%s*(.-)%s*$"
 
@@ -146,7 +156,7 @@ safe_module = (name, tbl) ->
   }
 
 {
-  :moon, :pos_to_line, :pos_to_line_column, :get_closest_line, :get_line, :trim, :split, :dump,
+  :moon, :pos_to_line, :pos_to_line_column, :line_column_to_pos, :get_closest_line, :get_line, :trim, :split, :dump,
   :debug_posmap, :getfenv, :setfenv, :get_options, :unpack, :safe_module
 }
 

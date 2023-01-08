@@ -53,6 +53,20 @@ pos_to_line_column = function(str, pos)
   end
   return line, column
 end
+local line_column_to_pos
+line_column_to_pos = function(str, line, column)
+  local pos = 0
+  for i = 1, #str do
+    if str:sub(i, i) == "\n" then
+      line = line - 1
+      if line == 0 then
+        return pos + column
+      end
+    end
+    pos = pos + 1
+  end
+  return pos
+end
 local trim
 trim = function(str)
   return str:match("^%s*(.-)%s*$")
@@ -219,6 +233,7 @@ return {
   moon = moon,
   pos_to_line = pos_to_line,
   pos_to_line_column = pos_to_line_column,
+  line_column_to_pos = line_column_to_pos,
   get_closest_line = get_closest_line,
   get_line = get_line,
   trim = trim,

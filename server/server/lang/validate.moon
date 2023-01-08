@@ -70,8 +70,11 @@ findSymbols = (tree) =>
 			for pair in *zip node[2], node[3]
 				{ k, v } = pair
 				print k, v
-				if type(k) == "table" and k[1] == "ref" -- not ntype because we don't want to check chains
-					scopeStack[#scopeStack][k[2]] or= scopeStack[#scopeStack].glob or k
+				if type(k) == "table"
+					-- if k[1] == "ref" -- not ntype because we don't want to check chains
+					visit k, {
+						ref: (node) -> scopeStack[#scopeStack][node[2]] or= scopeStack[#scopeStack].glob or node
+					}
 
 		ref: (node) ->
 			if @content\sub(node[-1], node[-1]) == " "
