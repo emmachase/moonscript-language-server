@@ -4,6 +4,7 @@ class ServerState
 	new: =>
 		@initialized = false
 		@pendingNotifications = {}
+		@symbols = {}
 		@symbolDeclarationMap = {}
 		@symbolNodeMap = {}
 		@symbolPositionMap = {}
@@ -11,6 +12,16 @@ class ServerState
 	notify: (notification) =>
 		table.insert @pendingNotifications, notification
 
-		-- # Notify all clients that the server is ready
-		-- @clients.each do |client|
-		-- 	client.send "server_ready"
+	symbolIterator: =>
+		queue = {}
+		for symbol in *@symbols
+			table.insert queue, symbol
+
+		->
+			return nil if #queue == 0
+			item = table.remove queue, 1
+			if item.children
+				for child in *item.children
+					table.insert queue, child
+
+			return item

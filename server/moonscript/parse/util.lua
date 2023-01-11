@@ -112,6 +112,15 @@ pos = function(patt)
     return value
   end
 end
+local endPos
+endPos = function(patt)
+  return (patt * Cp()) / function(value, pos)
+    if type(value) == "table" then
+      value[-2] = pos
+    end
+    return value
+  end
+end
 local got
 got = function(what, context)
   if context == nil then
@@ -296,6 +305,7 @@ return {
   extract_line = extract_line,
   mark = mark,
   pos = pos,
+  endPos = endPos,
   flatten_or_mark = flatten_or_mark,
   is_assignable = is_assignable,
   check_assignable = check_assignable,

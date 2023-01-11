@@ -25,7 +25,7 @@ SpaceName = Space * _Name
 Num = Space * (Num / (v) -> {"number", v})
 
 {
-  :Indent, :Cut, :ensure, :extract_line, :mark, :pos, :flatten_or_mark,
+  :Indent, :Cut, :ensure, :extract_line, :mark, :pos, :endPos, :flatten_or_mark,
   :is_assignable, :check_assignable, :format_assign, :format_single_assign,
   :sym, :symx, :simple_string, :wrap_func_arg, :join_chain,
   :wrap_decorator, :check_lua_string, :self_assign, :got
@@ -300,9 +300,9 @@ build_grammar = wrap_env debug_grammar, (root) ->
     FnArgDefList: FnArgDef * ((sym"," + Break) * White * FnArgDef)^0 * ((sym"," + Break) * White * pos(Ct(VarArg)))^0 + pos(Ct(VarArg))
     FnArgDef: pos(Ct((Name + SelfName) * (sym"=" * Exp)^-1))
 
-    FunLit: FnArgsDef *
+    FunLit: endPos(FnArgsDef *
       (sym"->" * Cc"slim" + sym"=>" * Cc"fat") *
-      (Body + Ct"") / mark"fndef"
+      (Body + Ct"") / mark"fndef")
 
     NameList: Name * (sym"," * Name)^0
     NameOrDestructure: Name + TableLit

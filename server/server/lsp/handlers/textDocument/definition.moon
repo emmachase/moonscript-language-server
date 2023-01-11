@@ -6,7 +6,7 @@ import null from require "util.json"
 	line, character = params.position.line, params.position.character
 
 	-- Find the symbol at the given position
-	for symbol in *@symbols
+	for symbol in @symbolIterator!
 		if symbol.selectionRange.start.line == line               and
 		   symbol.selectionRange.end.line == line                 and
 		   symbol.selectionRange.start.character - 1 <= character and 

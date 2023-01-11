@@ -4,9 +4,7 @@ return function(self, params)
   self.uri = params.textDocument.uri
   local line, character = params.position.line, params.position.character
   local includeDeclaration = params.context.includeDeclaration
-  local _list_0 = self.symbols
-  for _index_0 = 1, #_list_0 do
-    local symbol = _list_0[_index_0]
+  for symbol in self:symbolIterator() do
     if symbol.selectionRange.start.line == line and symbol.selectionRange["end"].line == line and symbol.selectionRange.start.character - 1 <= character and symbol.selectionRange["end"].character >= character then
       local declarationNode = self.symbolDeclarationMap[symbol]
       if not (declarationNode) then
@@ -17,9 +15,9 @@ return function(self, params)
         do
           local _accum_0 = { }
           local _len_0 = 1
-          local _list_1 = declarationNode.uses
-          for _index_1 = 1, #_list_1 do
-            local use = _list_1[_index_1]
+          local _list_0 = declarationNode.uses
+          for _index_0 = 1, #_list_0 do
+            local use = _list_0[_index_0]
             _accum_0[_len_0] = {
               uri = self.uri,
               range = {

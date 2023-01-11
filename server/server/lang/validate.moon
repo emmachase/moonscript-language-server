@@ -18,6 +18,17 @@ import visit from require "lang.visitor"
 
 -- 	}
 
+inferName = (node) ->
+	-- Try to infer name of the node from what it's assigned to
+	assignNode = node.parent
+	return nil if not assignNode
+	assignNode = assignNode.parent
+	return nil if not assignNode or assignNode.name != "assign"
+	
+	refNode = assignNode[2][node.index]
+	return nil if not refNode or refNode.name != "ref"
+	return refNode[2]
+
 findSymbols = (tree) =>
 	symbols = {}
 	scopeStack = {{}}
@@ -104,6 +115,24 @@ findSymbols = (tree) =>
 
 		fndef: (node) ->
 			popFun = pushStack!
+			oldSymbols = symbols
+
+			line, character = pos_to_line_column @content, node[-1]
+			line2, character2 = pos_to_line_column @content, node[-2]
+			range = {
+				start: { :line, :character },
+				["end"]: { line: line2, character: character2 - 1 },
+			}
+			fnSymbol = {
+				name: inferName(node) or "function", -- TODO: Get name
+				kind: SymbolKind.Function, 
+				:range, selectionRange: range,
+				children: {}
+			}
+			symbols[#symbols + 1] = fnSymbol
+
+			-- Any new symbols are children of the function symbol
+			symbols = fnSymbol.children
 
 			-- Args are symbols
 			for arg in *node[2]
@@ -127,7 +156,10 @@ findSymbols = (tree) =>
 				@symbolDeclarationMap[symbol] = declaration
 				@symbolPositionMap[arg[-1]] = symbol
 				symbols[#symbols + 1] = symbol
-			return popFun
+			-- popFun
+			return ->
+				popFun!
+				symbols = oldSymbols
 		
 		if: pushStack
 		else: pushStack

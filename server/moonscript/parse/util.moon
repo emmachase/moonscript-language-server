@@ -84,6 +84,12 @@ pos = (patt) ->
       value[-1] = pos
     value
 
+endPos = (patt) ->
+  (patt * Cp!) / (value, pos) ->
+    if type(value) == "table"
+      value[-2] = pos
+    value
+
 -- generates a debug pattern that always succeeds and prints out where we are
 -- in the buffer with a label
 got = (what, context=true) ->
@@ -191,7 +197,7 @@ check_lua_string = (str, pos, right, left) ->
 self_assign = (pos, name) ->
 	{{name: "key_literal", "key_literal", name}, {name:"ref", "ref", name, [-1]: pos}}
 
-{ :Indent, :Cut, :ensure, :extract_line, :mark, :pos, :flatten_or_mark,
+{ :Indent, :Cut, :ensure, :extract_line, :mark, :pos, :endPos, :flatten_or_mark,
   :is_assignable, :check_assignable, :format_assign, :format_single_assign,
   :sym, :symx, :simple_string, :wrap_func_arg, :join_chain, :wrap_decorator,
   :check_lua_string, :self_assign, :got, :show_line_position }

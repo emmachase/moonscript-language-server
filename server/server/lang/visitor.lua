@@ -27,9 +27,10 @@ visit = function(tree, visitors)
     return 
   end
   local popFun = visitNode(tree, visitors)
-  for _index_0 = 1, #tree do
-    local node = tree[_index_0]
+  for i, node in ipairs(tree) do
     if type(node) == "table" then
+      node.parent = tree
+      node.index = i
       visit(node, visitors)
     end
   end

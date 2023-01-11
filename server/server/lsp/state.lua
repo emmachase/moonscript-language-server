@@ -9,6 +9,28 @@ do
   local _base_0 = {
     notify = function(self, notification)
       return table.insert(self.pendingNotifications, notification)
+    end,
+    symbolIterator = function(self)
+      local queue = { }
+      local _list_0 = self.symbols
+      for _index_0 = 1, #_list_0 do
+        local symbol = _list_0[_index_0]
+        table.insert(queue, symbol)
+      end
+      return function()
+        if #queue == 0 then
+          return nil
+        end
+        local item = table.remove(queue, 1)
+        if item.children then
+          local _list_1 = item.children
+          for _index_0 = 1, #_list_1 do
+            local child = _list_1[_index_0]
+            table.insert(queue, child)
+          end
+        end
+        return item
+      end
     end
   }
   _base_0.__index = _base_0
@@ -16,6 +38,7 @@ do
     __init = function(self)
       self.initialized = false
       self.pendingNotifications = { }
+      self.symbols = { }
       self.symbolDeclarationMap = { }
       self.symbolNodeMap = { }
       self.symbolPositionMap = { }

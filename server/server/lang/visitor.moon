@@ -18,8 +18,10 @@ visit = (tree, visitors) ->
 
 	popFun = visitNode tree, visitors
 
-	for node in *tree
+	for i, node in ipairs tree
 		if type(node) == "table"
+			node.parent = tree
+			node.index = i
 			visit node, visitors -- recurse
 
 	if type(popFun) == "function" then popFun!

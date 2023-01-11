@@ -12,6 +12,22 @@ local ntype
 ntype = require("moonscript.types").ntype
 local visit
 visit = require("lang.visitor").visit
+local inferName
+inferName = function(node)
+  local assignNode = node.parent
+  if not assignNode then
+    return nil
+  end
+  assignNode = assignNode.parent
+  if not assignNode or assignNode.name ~= "assign" then
+    return nil
+  end
+  local refNode = assignNode[2][node.index]
+  if not refNode or refNode.name ~= "ref" then
+    return nil
+  end
+  return refNode[2]
+end
 local findSymbols
 findSymbols = function(self, tree)
   local symbols = { }
@@ -128,6 +144,28 @@ findSymbols = function(self, tree)
     end,
     fndef = function(node)
       local popFun = pushStack()
+      local oldSymbols = symbols
+      local line, character = pos_to_line_column(self.content, node[-1])
+      local line2, character2 = pos_to_line_column(self.content, node[-2])
+      local range = {
+        start = {
+          line = line,
+          character = character
+        },
+        ["end"] = {
+          line = line2,
+          character = character2 - 1
+        }
+      }
+      local fnSymbol = {
+        name = inferName(node) or "function",
+        kind = SymbolKind.Function,
+        range = range,
+        selectionRange = range,
+        children = { }
+      }
+      symbols[#symbols + 1] = fnSymbol
+      symbols = fnSymbol.children
       local _list_0 = node[2]
       for _index_0 = 1, #_list_0 do
         local _continue_0 = false
@@ -137,8 +175,8 @@ findSymbols = function(self, tree)
             _continue_0 = true
             break
           end
-          local line, character = pos_to_line_column(self.content, arg[-1])
-          local range = {
+          line, character = pos_to_line_column(self.content, arg[-1])
+          range = {
             start = {
               line = line,
               character = character
@@ -166,7 +204,10 @@ findSymbols = function(self, tree)
           break
         end
       end
-      return popFun
+      return function()
+        popFun()
+        symbols = oldSymbols
+      end
     end,
     ["if"] = pushStack,
     ["else"] = pushStack,

@@ -3,9 +3,7 @@ null = require("util.json").null
 return function(self, params)
   self.uri = params.textDocument.uri
   local line, character = params.position.line, params.position.character
-  local _list_0 = self.symbols
-  for _index_0 = 1, #_list_0 do
-    local symbol = _list_0[_index_0]
+  for symbol in self:symbolIterator() do
     if symbol.selectionRange.start.line == line and symbol.selectionRange["end"].line == line and symbol.selectionRange.start.character - 1 <= character and symbol.selectionRange["end"].character >= character then
       local declarationNode = self.symbolDeclarationMap[symbol]
       if not (declarationNode) then
