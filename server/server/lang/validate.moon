@@ -31,6 +31,26 @@ findSymbols = (tree) =>
 		scopeStack[#scopeStack + 1] = { k, v for k, v in pairs scopeStack[#scopeStack] }
 		-> scopeStack[#scopeStack] = nil -- Pop
 
+	pushClosureStack = (node, symbolFn) ->
+		popFun = pushStack!
+		oldSymbols = symbols
+
+		line, character = pos_to_line_column @content, node[-1]
+		line2, character2 = pos_to_line_column @content, node[-2]
+		range = {
+			start: { :line, :character },
+			["end"]: { line: line2, character: character2 - 1 },
+		}
+		fnSymbol = symbolFn node, range
+		symbols[#symbols + 1] = fnSymbol
+
+		-- Any new symbols are children of the function symbol
+		symbols = fnSymbol.children
+
+		-> -- Unwind
+			popFun!
+			symbols = oldSymbols
+
 	visit tree, {
 		import: "declare_with_shadows"
 		declare_with_shadows: (node) ->
@@ -106,26 +126,23 @@ findSymbols = (tree) =>
 			@symbolPositionMap[node[-1]] = symbol
 			symbols[#symbols + 1] = symbol
 
+		class: (node) ->
+			pushClosureStack node, (node, range) ->
+				{
+					name: node[2] or inferName(node) or "class",
+					kind: SymbolKind.Class, 
+					:range, selectionRange: range,
+					children: {}
+				}
+
 		fndef: (node) ->
-			popFun = pushStack!
-			oldSymbols = symbols
-
-			line, character = pos_to_line_column @content, node[-1]
-			line2, character2 = pos_to_line_column @content, node[-2]
-			range = {
-				start: { :line, :character },
-				["end"]: { line: line2, character: character2 - 1 },
-			}
-			fnSymbol = {
-				name: inferName(node) or "function", -- TODO: Get name
-				kind: SymbolKind.Function, 
-				:range, selectionRange: range,
-				children: {}
-			}
-			symbols[#symbols + 1] = fnSymbol
-
-			-- Any new symbols are children of the function symbol
-			symbols = fnSymbol.children
+			popFun = pushClosureStack node, (node, range) ->
+				{
+					name: inferName(node) or "function",
+					kind: node[4] == "fat" and SymbolKind.Method or SymbolKind.Function, 
+					:range, selectionRange: range,
+					children: {}
+				}
 
 			-- Args are symbols
 			for arg in *node[2]
@@ -149,10 +166,8 @@ findSymbols = (tree) =>
 				@symbolDeclarationMap[symbol] = declaration
 				@symbolPositionMap[arg[-1]] = symbol
 				symbols[#symbols + 1] = symbol
-			-- popFun
-			return ->
-				popFun!
-				symbols = oldSymbols
+
+			popFun -- Unwind
 		
 		if: pushStack
 		else: pushStack

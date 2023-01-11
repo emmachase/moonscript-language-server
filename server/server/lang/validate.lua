@@ -33,6 +33,30 @@ findSymbols = function(self, tree)
       scopeStack[#scopeStack] = nil
     end
   end
+  local pushClosureStack
+  pushClosureStack = function(node, symbolFn)
+    local popFun = pushStack()
+    local oldSymbols = symbols
+    local line, character = pos_to_line_column(self.content, node[-1])
+    local line2, character2 = pos_to_line_column(self.content, node[-2])
+    local range = {
+      start = {
+        line = line,
+        character = character
+      },
+      ["end"] = {
+        line = line2,
+        character = character2 - 1
+      }
+    }
+    local fnSymbol = symbolFn(node, range)
+    symbols[#symbols + 1] = fnSymbol
+    symbols = fnSymbol.children
+    return function()
+      popFun()
+      symbols = oldSymbols
+    end
+  end
   visit(tree, {
     import = "declare_with_shadows",
     declare_with_shadows = function(node)
@@ -128,30 +152,27 @@ findSymbols = function(self, tree)
       self.symbolPositionMap[node[-1]] = symbol
       symbols[#symbols + 1] = symbol
     end,
-    fndef = function(node)
-      local popFun = pushStack()
-      local oldSymbols = symbols
-      local line, character = pos_to_line_column(self.content, node[-1])
-      local line2, character2 = pos_to_line_column(self.content, node[-2])
-      local range = {
-        start = {
-          line = line,
-          character = character
-        },
-        ["end"] = {
-          line = line2,
-          character = character2 - 1
+    class = function(node)
+      return pushClosureStack(node, function(node, range)
+        return {
+          name = node[2] or inferName(node) or "class",
+          kind = SymbolKind.Class,
+          range = range,
+          selectionRange = range,
+          children = { }
         }
-      }
-      local fnSymbol = {
-        name = inferName(node) or "function",
-        kind = SymbolKind.Function,
-        range = range,
-        selectionRange = range,
-        children = { }
-      }
-      symbols[#symbols + 1] = fnSymbol
-      symbols = fnSymbol.children
+      end)
+    end,
+    fndef = function(node)
+      local popFun = pushClosureStack(node, function(node, range)
+        return {
+          name = inferName(node) or "function",
+          kind = node[4] == "fat" and SymbolKind.Method or SymbolKind.Function,
+          range = range,
+          selectionRange = range,
+          children = { }
+        }
+      end)
       local _list_0 = node[2]
       for _index_0 = 1, #_list_0 do
         local _continue_0 = false
@@ -161,8 +182,8 @@ findSymbols = function(self, tree)
             _continue_0 = true
             break
           end
-          line, character = pos_to_line_column(self.content, arg[-1])
-          range = {
+          local line, character = pos_to_line_column(self.content, arg[-1])
+          local range = {
             start = {
               line = line,
               character = character
@@ -190,10 +211,7 @@ findSymbols = function(self, tree)
           break
         end
       end
-      return function()
-        popFun()
-        symbols = oldSymbols
-      end
+      return popFun
     end,
     ["if"] = pushStack,
     ["else"] = pushStack,

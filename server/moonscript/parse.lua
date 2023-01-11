@@ -181,7 +181,7 @@ local build_grammar = wrap_env(debug_grammar, function(root)
     TableLitLine = PushIndent * ((TableValueList * PopIndent) + (PopIndent * Cut)) + Space,
     TableBlockInner = Ct(KeyValueLine * (SpaceBreak ^ 1 * KeyValueLine) ^ 0),
     TableBlock = SpaceBreak ^ 1 * Advance * ensure(TableBlockInner, PopIndent) / mark("table"),
-    ClassDecl = key("class") * -P(":") * (Assignable + Cc(nil)) * (key("extends") * PreventIndent * ensure(Exp, PopIndent) + C("")) ^ -1 * (ClassBlock + Ct("")) / mark("class"),
+    ClassDecl = endPos(key("class") * -P(":") * (Assignable + Cc(nil)) * (key("extends") * PreventIndent * ensure(Exp, PopIndent) + C("")) ^ -1 * (ClassBlock + Ct("")) / mark("class")),
     ClassBlock = SpaceBreak ^ 1 * Advance * Ct(ClassLine * (SpaceBreak ^ 1 * ClassLine) ^ 0) * PopIndent,
     ClassLine = CheckIndent * ((KeyValueList / mark("props") + Statement / mark("stm") + Exp / mark("stm")) * sym(",") ^ -1),
     Export = key("export") * (Cc("class") * ClassDecl + op("*") + op("^") + Ct(NameList) * (sym("=") * Ct(ExpListLow)) ^ -1) / mark("export"),
