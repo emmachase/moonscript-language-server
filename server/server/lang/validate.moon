@@ -9,6 +9,8 @@ import ntype from require "moonscript.types"
 
 import visit from require "lang.visitor"
 
+import inferName from require "lang.infer"
+
 -- Visits tree, and adds a scope property to each node, 
 -- which is a list of all in-scope symbols at that node, 
 -- along with their defined position.
@@ -18,16 +20,7 @@ import visit from require "lang.visitor"
 
 -- 	}
 
-inferName = (node) ->
-	-- Try to infer name of the node from what it's assigned to
-	assignNode = node.parent
-	return nil if not assignNode
-	assignNode = assignNode.parent
-	return nil if not assignNode or assignNode.name != "assign"
-	
-	refNode = assignNode[2][node.index]
-	return nil if not refNode or refNode.name != "ref"
-	return refNode[2]
+
 
 findSymbols = (tree) =>
 	symbols = {}
