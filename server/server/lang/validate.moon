@@ -8,19 +8,7 @@ import pos_to_line_column from require "moonscript.util"
 import ntype from require "moonscript.types"
 
 import visit from require "lang.visitor"
-
 import inferName from require "lang.infer"
-
--- Visits tree, and adds a scope property to each node, 
--- which is a list of all in-scope symbols at that node, 
--- along with their defined position.
--- tagTreeScopes = (tree) ->
--- 	visit tree {
--- 		assign: =>
-
--- 	}
-
-
 
 findSymbols = (tree) =>
 	symbols = {}
