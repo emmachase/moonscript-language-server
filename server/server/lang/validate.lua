@@ -46,7 +46,7 @@ findSymbols = function(self, tree)
       },
       ["end"] = {
         line = line2,
-        character = character2 - 1
+        character = math.max(0, character2 - 1)
       }
     }
     local fnSymbol = symbolFn(node, range)

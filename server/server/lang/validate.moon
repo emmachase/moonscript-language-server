@@ -27,7 +27,7 @@ findSymbols = (tree) =>
 		line2, character2 = pos_to_line_column @content, node[-2]
 		range = {
 			start: { :line, :character },
-			["end"]: { line: line2, character: character2 - 1 },
+			["end"]: { line: line2, character: math.max(0, character2 - 1) },
 		}
 		fnSymbol = symbolFn node, range
 		symbols[#symbols + 1] = fnSymbol
